@@ -20,8 +20,15 @@
 # Default SRC = $EMU_LIB  (else ~/emustaging/Emulation)
 #
 set -euo pipefail
-IP="${1:?usage: $0 <deck-ip> <deck-Emulation-path> [src]}"
-REMOTE="${2:?give the deck Emulation path, e.g. /run/media/SDCARD/Emulation}"
+HERE="$(cd "$(dirname "$0")" && pwd)"
+# Defaults from repo-root .env (DECK_IP, CARD, EMU_LIB); positional args override.
+# So after .env is set, this can run with no args:  ./transfer-to-deck.sh
+ROOT="$(cd "$HERE/.." && pwd)"
+if   [ -f "$ROOT/.env" ];     then . "$ROOT/.env"
+elif [ -f "$HERE/sync.env" ]; then . "$HERE/sync.env"
+fi
+IP="${1:-${DECK_IP:-}}";   [ -n "$IP" ]     || { echo "usage: $0 <deck-ip> <deck-Emulation-path> [src]   (or set DECK_IP in .env)"; exit 1; }
+REMOTE="${2:-${CARD:-}}";  [ -n "$REMOTE" ] || { echo "give the deck Emulation path as arg 2, or set CARD in .env"; exit 1; }
 SRC="${3:-${EMU_LIB:-$HOME/emustaging/Emulation}}"
 
 [ -d "$SRC/roms" ] || { echo "No $SRC/roms — build/import your staging tree first."; exit 1; }

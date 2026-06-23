@@ -13,6 +13,13 @@
 # BIOS_DIR resolved as:  arg 1  >  $EMU_LIB/bios  >  ~/emustaging/Emulation/bios
 #
 set -uo pipefail
+HERE="$(cd "$(dirname "$0")" && pwd)"
+# Pick up EMU_LIB (and friends) from the repo-root .env, like sync.sh/zip-status.sh,
+# so `./check-bios.sh` with no args checks YOUR library, not the default staging dir.
+ROOT="$(cd "$HERE/.." && pwd)"
+if   [ -f "$ROOT/.env" ];     then . "$ROOT/.env"
+elif [ -f "$HERE/sync.env" ]; then . "$HERE/sync.env"
+fi
 BIOS="${1:-${EMU_LIB:-$HOME/emustaging/Emulation}/bios}"
 
 # system | relative/path/filename | required(yes/no) | note
