@@ -194,14 +194,19 @@ All in `scripts/`, all run on the **PC** except where noted.
 | `setup-tools.sh` | Installs chdman, 7z, unzip, rsync, ssh, igir (Ubuntu/WSL2). |
 | `make-rom-skeleton.sh` | Builds the `Emulation/roms/<system>` + `bios/` staging tree. |
 | `import-roms.sh` | Generic importer: maps any source layout → EmuDeck systems; **symlinks** into local staging or **copies real files** to an external/`/mnt` drive (auto), compressing discs to `.chd`. Honors `EMU_LIB`. |
-| `import-zips.sh` | **Parallel, idempotent** importer for Redump/No-Intro `"System Name/*.zip"` sets: extract → `.chd` (carts copied as-is). `-j N` jobs (auto ≈ cores/5). Skips still-downloading/partial zips and retries them — safe to re-run mid-download or to add more systems. |
-| `sync.sh` | One-command **idempotent sync**: `import-zips` + `transfer-to-deck`. Re-run anytime to add new games (config in `.env`, see [`.env.example`](.env.example)). |
-| `zip-status.sh` | **Read-only** report: which zips are imported (`.chd` exists) vs pending, and why (still-downloading / ready / needs-attention). Touches nothing. |
-| `systems.sh` | Shared folder-name → EmuDeck-system mapping (sourced by both importers). |
+| `import-zips.sh` | **Parallel, idempotent** importer for Redump/No-Intro `"System Name/*.zip"` sets: extract → `.chd` (carts copied as-is). Finds system folders at **any depth** — flat *or* nested `Redump/` + `No-Intro/` (e.g. a Myrient mirror) in one run. `-j N` jobs (auto ≈ cores/5); skips/retries still-downloading zips. |
+| `zip-status.sh` | **Read-only** report: which zips are imported (`.chd` exists) vs pending, and why (still-downloading / ready / needs-attention). Recurses like `import-zips`. Touches nothing. |
+| `sync.sh` | **Idempotent sync**: `import-zips` + `transfer-to-deck`. Re-run anytime to add new games (config in `.env`, see [`.env.example`](.env.example)). |
+| `full-sync.sh` | **The whole loop in one command**: `sync.sh`, then over SSH on the deck — regenerate RetroArch playlists + cover art and update the Steam library via the SRM CLI. Needs passwordless SSH (`ssh-copy-id`). Flags: `--no-srm` / `--no-deck` / `--no-import`. |
+| `systems.sh` | Shared source-folder-name → EmuDeck-system mapping (sourced by both importers). |
 | `compress-chd.sh` | Batch `.cue/.iso/.gdi` → `.chd` (`--dvd` for PS2, `--out DIR` to redirect, `--delete` to drop sources/links). |
 | `make-m3u.sh` | Generates multi-disc `.m3u` playlists. |
-| `check-bios.sh` | Pre-checks expected BIOS filenames (downloads nothing). |
-| `transfer-to-deck.sh` | `rsync`-over-SSH push to the deck's SD card. |
+| `check-bios.sh` | Pre-checks expected BIOS filenames (downloads nothing). Reads `.env`. |
+| `transfer-to-deck.sh` | `rsync`-over-SSH push to the deck's SD card. Reads `.env` (runs arg-less). |
+| `make-retroarch-playlists.sh` | *(runs on the deck)* Generates RetroArch `.lpl` playlists from the roms tree — one per system, named to match libretro so thumbnails resolve; multi-disc `.m3u` shown once. |
+| `get-retroarch-thumbnails.sh` | *(runs on the deck)* Bulk-downloads matching cover art from libretro's thumbnail server into RetroArch's `thumbnails/`. Idempotent. |
+| `srm-add.sh` | *(runs on the deck)* Updates the Steam library headlessly via the Steam ROM Manager **CLI** (`add`) — closes Steam first; GUI fallback if the CLI can't run. |
+| `retroarch-systems.sh` | Shared system-id → RetroArch database-name map (sourced by the two RetroArch scripts above). |
 
 ---
 

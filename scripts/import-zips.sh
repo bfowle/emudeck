@@ -2,9 +2,12 @@
 #
 # import-zips.sh — idempotently add Redump/No-Intro per-game .zip sets to the library.
 #
-# Input layout (e.g. a torrent download):
-#   <input>/<System Name>/<Game (Region).zip>
+# Input layout (e.g. a torrent download). System folders may sit at ANY depth, so a
+# flat "<input>/<System>/*.zip" AND nested "<input>/Redump|No-Intro/<System>/*.zip"
+# (e.g. a Myrient mirror) both work in a single run:
+#   <input>/.../<System Name>/<Game (Region).zip>
 #   e.g.  "Sony - PlayStation/Alundra (USA) (Rev 1).zip"
+#         "Redump/Sega - Dreamcast/..."  and  "No-Intro/Nintendo - Game Boy/..."
 #
 # For each zip:
 #   • disc set (.cue/.gdi/.toc/.iso inside)  -> extract -> chdman -> <game>.chd
@@ -96,8 +99,10 @@ echo
 
 touched=()
 shopt -s nullglob
-for sysdir in "$INPUT"/*/; do
-  sysdir="${sysdir%/}"; folder="$(basename "$sysdir")"
+# Iterate every directory that directly holds .zip files — handles a flat
+# "<input>/<System>/*.zip" layout AND nested ones (Redump/ + No-Intro/) in one pass.
+while IFS= read -r -d '' sysdir; do
+  folder="$(basename "$sysdir")"
   sys="$(map_system "$folder")"
   [ -z "$sys" ] && { printf "  ?  UNMAPPED  %s\n" "$folder"; continue; }
   zips=("$sysdir"/*.zip)
@@ -109,7 +114,7 @@ for sysdir in "$INPUT"/*/; do
     while [ "$(jobs -rp | wc -l)" -ge "$JOBS" ]; do wait -n; done
     process_zip "$z" "$sys" "$out" "$mode" &
   done
-done
+done < <(find "$INPUT" -type f -name '*.zip' -printf '%h\0' | sort -zu)
 wait
 
 for out in "${touched[@]}"; do "$HERE/make-m3u.sh" "$out" >/dev/null 2>&1 || true; done

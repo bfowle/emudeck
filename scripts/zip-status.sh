@@ -37,8 +37,9 @@ echo
 
 gtot=0; gdone=0; gpend=0; gdl=0
 shopt -s nullglob
-for sysdir in "$INPUT"/*/; do
-  sysdir="${sysdir%/}"; folder="$(basename "$sysdir")"
+# system folders at any depth (flat, or nested under Redump/ + No-Intro/ like Myrient)
+while IFS= read -r -d '' sysdir; do
+  folder="$(basename "$sysdir")"
   sys="$(map_system "$folder")"
   [ -z "$sys" ] && { printf "  ?  UNMAPPED  %s\n" "$folder"; continue; }
   zips=("$sysdir"/*.zip); [ ${#zips[@]} -eq 0 ] && continue
@@ -58,7 +59,7 @@ for sysdir in "$INPUT"/*/; do
   printf "  %-12s %d/%d imported%s\n" "$sys" "$done" "$tot" "$( [ "$pend" -gt 0 ] && printf "  (%d pending)" "$pend" )"
   for l in "${lines[@]}"; do echo "$l"; done
   gtot=$((gtot+tot)); gdone=$((gdone+done)); gpend=$((gpend+pend))
-done
+done < <(find "$INPUT" -type f -name '*.zip' -printf '%h\0' | sort -zu)
 
 echo
 echo "TOTAL: $gdone/$gtot imported, $gpend pending ($gdl still downloading)."
