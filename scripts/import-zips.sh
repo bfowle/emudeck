@@ -22,7 +22,7 @@
 #
 # Usage:
 #   ./import-zips.sh [-j N] <input-dir> [dest-roms-dir]
-#   ./import-zips.sh -j 6 "/mnt/e/][TORRENTS][" /mnt/e/Emulation/roms
+#   ./import-zips.sh -j 6 "/path/to/zip-sets" "$EMU_LIB/roms"
 #
 set -uo pipefail
 HERE="$(cd "$(dirname "$0")" && pwd)"

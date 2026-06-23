@@ -74,6 +74,9 @@ saves/
 .env.local
 sync.env
 scripts/sync.env
+# SETUP-GUIDE.md is a personal, machine-specific worked run (real IP/paths) —
+# kept local-only, not shipped. The generic guide is README.md + ON-DECK.md.
+SETUP-GUIDE.md
 
 # --- npm cruft (igir installs globally; a lone lockfile here is accidental) ---
 package-lock.json

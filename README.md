@@ -15,7 +15,7 @@ I wrote this for my own setup and I'm sharing it in case it helps you — or fut
 |---|---|
 | `README.md` | This general guide (start here). |
 | `ON-DECK.md` | On-deck runbook: BIOS, Steam ROM Manager, RetroAchievements, hotkeys, RetroArch playlists/thumbnails, SSH config editing & troubleshooting — everything *after* the transfer. |
-| `SETUP-GUIDE.md` | My own worked run-through as a concrete example (specific paths, decisions, library). |
+| `SETUP-GUIDE.md` | *(gitignored, local-only)* a personal machine-specific worked run; not shipped. Make your own from this README — every machine's paths/IP differ. |
 | `.env.example` | Template for your personal paths/IP — `cp .env.example .env`, then edit (`.env` is gitignored). |
 | `scripts/` | Bash scripts that automate the off-device prep (see [Scripts](#scripts)). |
 
