@@ -1,0 +1,85 @@
+# This repo holds SCRIPTS + DOCS ONLY.
+# It must never contain ROMs, BIOS/firmware, game disc images, or executables.
+# The scripts stage game data under ~/emustaging (outside this repo) by default;
+# the patterns below are a safety net against accidental commits.
+
+# --- Disc images / ROMs ---
+*.iso
+*.bin
+*.cue
+*.chd
+*.gdi
+*.cdi
+*.img
+*.mdf
+*.mds
+*.ccd
+*.sub
+*.nrg
+*.toc
+*.pbp
+*.cso
+
+# --- Cartridge dumps ---
+*.nes
+*.sfc
+*.smc
+*.gb
+*.gbc
+*.gba
+*.nds
+*.n64
+*.z64
+*.v64
+# NOTE: Mega Drive ROMs also use .md — but globbing "*.md" would swallow our
+# Markdown docs (README.md, SETUP-GUIDE.md). Mega Drive dumps never live loose in
+# this repo; they're covered by the roms/ and Emulation/ staging-dir ignores below.
+*.gen
+*.sms
+*.gg
+*.pce
+*.32x
+
+# --- Playlists that reference games ---
+*.m3u
+
+# --- BIOS / firmware ---
+*.rom
+bios/
+BIOS/
+
+# --- Executables / installers / libraries ---
+*.exe
+*.AppImage
+*.dll
+*.msi
+*.bat
+
+# --- Archives (commonly wrap ROMs) ---
+*.7z
+*.zip
+*.rar
+*.gz
+*.tar
+
+# --- Staging / scratch dirs ---
+emustaging/
+Emulation/
+roms/
+saves/
+
+# --- personal config (keep out of the shareable repo) ---
+# .env holds your real paths/IP; .env.example is the tracked template.
+.env
+.env.local
+sync.env
+scripts/sync.env
+
+# --- npm cruft (igir installs globally; a lone lockfile here is accidental) ---
+package-lock.json
+node_modules/
+
+# --- OS junk ---
+.DS_Store
+Thumbs.db
+desktop.ini
