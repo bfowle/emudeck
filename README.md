@@ -205,7 +205,8 @@ All in `scripts/`, all run on the **PC** except where noted.
 | `transfer-to-deck.sh` | `rsync`-over-SSH push to the deck's SD card. Reads `.env` (runs arg-less). |
 | `make-retroarch-playlists.sh` | *(runs on the deck)* Generates RetroArch `.lpl` playlists from the roms tree — one per system, named to match libretro so thumbnails resolve; multi-disc `.m3u` shown once. |
 | `get-retroarch-thumbnails.sh` | *(runs on the deck)* Bulk-downloads matching cover art from libretro's thumbnail server into RetroArch's `thumbnails/`. Idempotent + **miss-cached**: skips art already on disk *and* games with no art in the DB, so warm re-runs do ~zero network (`--recheck` to retry misses). |
-| `srm-add.sh` | *(runs on the deck)* Updates the Steam library via the Steam ROM Manager **CLI** (`add`) — closes Steam first. SRM (Electron) needs a display, so over SSH it borrows the running **Desktop-Mode** session's X display; clear GUI fallback if none is available. |
+| `srm-add.sh` | *(runs on the deck)* Updates the Steam library via the Steam ROM Manager **CLI** (`add`), grouping games into **per-console collections** (sets each parser's `steamCategory`). Borrows the running **Desktop-Mode** session's full env (display + D-Bus) so `add` works over SSH; closes Steam first; GUI fallback otherwise. |
+| `setup-cheevos.py` | *(runs on the deck)* Logs **RetroAchievements** (softcore) into RetroArch, DuckStation & Flycast via the RA API token — reads creds from `$RA_USER/$RA_PASS` or `retroarch.cfg`. No on-screen keyboard. |
 | `retroarch-systems.sh` | Shared system-id → RetroArch database-name map (sourced by the two RetroArch scripts above). |
 
 ---
