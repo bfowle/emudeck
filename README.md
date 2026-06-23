@@ -14,6 +14,7 @@ I wrote this for my own setup and I'm sharing it in case it helps you — or fut
 | Path | What it is |
 |---|---|
 | `README.md` | This general guide (start here). |
+| `ON-DECK.md` | On-deck runbook: BIOS, Steam ROM Manager, RetroAchievements, hotkeys, RetroArch playlists/thumbnails, SSH config editing & troubleshooting — everything *after* the transfer. |
 | `SETUP-GUIDE.md` | My own worked run-through as a concrete example (specific paths, decisions, library). |
 | `.env.example` | Template for your personal paths/IP — `cp .env.example .env`, then edit (`.env` is gitignored). |
 | `scripts/` | Bash scripts that automate the off-device prep (see [Scripts](#scripts)). |
@@ -96,9 +97,11 @@ S=~/emustaging/Emulation/roms
 ./check-bios.sh        # lists which BIOS each system needs; downloads nothing
 ```
 
-Most BIOS go flat in `Emulation/bios/`; **Dreamcast** (`dc_boot.bin`, `dc_flash.bin`) goes in `Emulation/bios/dc/`. You must supply your own (dumped from hardware you own). The deck's built-in EmuDeck **BIOS Checker** does the final checksum verification.
+Most BIOS go flat in `Emulation/bios/`; **Dreamcast** (`dc_boot.bin`, `dc_flash.bin`) goes in `Emulation/bios/dc/`. You must supply your own — dumped from hardware you own (an old RetroArch `system/` folder is often a ready source, since BIOS are platform-independent data). The deck's built-in EmuDeck **BIOS Checker** does the final checksum verification. See [`ON-DECK.md` §3](ON-DECK.md#3-bios) for the per-system file list and sourcing options.
 
 ### 5. Set up the deck
+
+> **Steps 5–9 are on-deck GUI** (Desktop Mode, EmuDeck app, Steam ROM Manager, ES-DE) — the part this CLI-forward repo deliberately doesn't script. For a thorough screenshot-by-screenshot walkthrough, see **Wagner's TechTalk**: [EmuDeck Setup Guide (v2.x)](https://wagnerstechtalk.com/sd-emudeck/), part of the broader [Steam Deck & Emulation guide](https://wagnerstechtalk.com/steamdeck/#Emulation). Note the EmuDeck *app* (BIOS Checker, Steam ROM Manager) is a **Desktop Mode** application; after SRM "Save to Steam," your games launch from **Gaming Mode** and the [EmuDecky](https://github.com/EmuDeck/EmuDecky) Decky plugin covers most ongoing tweaks from the Quick Access menu.
 
 1. Update SteamOS (Settings → System → Updates).
 2. Desktop Mode → Konsole:
@@ -119,6 +122,11 @@ Most BIOS go flat in `Emulation/bios/`; **Dreamcast** (`dc_boot.bin`, `dc_flash.
 
 `rsync` over SSH — resumable, only copies changes. Use the **Dock's Ethernet** for speed.
 
+> **Steps 7–10 are an on-deck overview.** For the full runbook — BIOS sourcing,
+> Steam ROM Manager, RetroAchievements (incl. editing `retroarch.cfg` over SSH),
+> hotkeys, RetroArch playlists/thumbnails, and SteamOS gotchas — see
+> **[`ON-DECK.md`](ON-DECK.md)**.
+
 ### 7. Add to Steam + browse
 
 - **Steam ROM Manager** (in the EmuDeck app): enable parsers → Add Games → scrapes artwork → Save to Steam.
@@ -126,7 +134,7 @@ Most BIOS go flat in `Emulation/bios/`; **Dreamcast** (`dc_boot.bin`, `dc_flash.
 
 ### 8. RetroAchievements
 
-Create an account at [retroachievements.org](https://retroachievements.org). EmuDeck's installer login usually propagates to RetroArch + standalone emulators (DuckStation/PCSX2/PPSSPP/Dolphin); if one drops, re-enter the credentials in that emulator's *Settings → Achievements*. For RetroArch specifically, if login keeps expiring, set `cheevos_username`/`cheevos_password` and clear `cheevos_token` in `retroarch.cfg` (password auth survives token expiry). The **Emuchievements** Decky plugin shows progress in the Quick Access menu.
+Create an account at [retroachievements.org](https://retroachievements.org). EmuDeck's installer login (or the EmuDeck app's RetroAchievements step) usually propagates to RetroArch + standalone emulators (DuckStation/PCSX2/PPSSPP/Dolphin); if one drops, re-enter the credentials in that emulator's *Settings → Achievements* (Hardcore OFF for softcore). Skip the painful on-screen keyboard by setting `cheevos_enable`/`cheevos_username`/`cheevos_password` (and clearing `cheevos_token`) directly in `retroarch.cfg` over SSH — **with RetroArch closed**, since it rewrites that file on exit and killing it via *STEAM → Exit Game* discards changes. A boot-time *"Logged in as …"* popup confirms it; the **Emuchievements** Decky plugin shows progress in Gaming Mode. Full steps in [`ON-DECK.md` §5](ON-DECK.md#5-retroachievements-softcore).
 
 ### 9. Controllers + dock
 
@@ -134,7 +142,7 @@ Create an account at [retroachievements.org](https://retroachievements.org). Emu
 - **Wired USB** into the dock — always works.
 - **Xbox Wireless Adapter dongle** — on SteamOS it needs the community `xone` driver, isn't officially supported, and breaks on updates; prefer Bluetooth/wired.
 
-EmuDeck hotkeys default to **Select + button** and assume the Deck's back paddles, which external pads lack — remap via **Steam Input** or check [emudeck.github.io/controls-and-hotkeys](https://emudeck.github.io/controls-and-hotkeys/). The dock provides HDMI/DP, Ethernet, USB, and charge passthrough.
+EmuDeck hotkeys use **Select + button** (e.g. Select+Start = quit, Select+R1/L1 = save/load state); the always-works exit is **STEAM → Exit Game**. Full combo table — and the fix for "a face button pauses the game" (a lost hotkey-enabler; toggle Game Focus mode) — is in [`ON-DECK.md` §6](ON-DECK.md#6-hotkeys--exiting-and-navigating); reference [emudeck.github.io/controls-and-hotkeys/steamos/hotkeys](https://emudeck.github.io/controls-and-hotkeys/steamos/hotkeys/). Remap for external pads (which lack the Deck's back paddles) via **Steam Input**. The dock provides HDMI/DP, Ethernet, USB, and charge passthrough.
 
 ### 10. Maintain
 
@@ -156,7 +164,12 @@ This repo links out instead of hosting anything. **Within copyright allowances**
 - chdman — part of MAME tools, <https://www.mamedev.org>
 - redumper (accurate disc dumping) — <https://github.com/superg/redumper>
 - Decky Loader (plugins) — <https://github.com/SteamDeckHomebrew/decky-loader>
+- EmuDecky (manage EmuDeck from Gaming Mode's Quick Access menu) — <https://github.com/EmuDeck/EmuDecky>
 - RetroAchievements — <https://retroachievements.org>
+
+**Guides & walkthroughs (the deck-side GUI steps this repo doesn't script)**
+- Wagner's TechTalk — EmuDeck Setup Guide (screenshot walkthrough) — <https://wagnerstechtalk.com/sd-emudeck/>
+- Wagner's TechTalk — Steam Deck & Emulation hub — <https://wagnerstechtalk.com/steamdeck/#Emulation>
 
 **Legal game content (homebrew / public domain)**
 - EmuDeck Store — built into the EmuDeck app; curated free/homebrew titles.
