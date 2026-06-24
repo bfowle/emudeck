@@ -1,11 +1,16 @@
 #!/usr/bin/env python3
-# fix-multidisc.py — remove the per-disc Steam shortcuts SRM creates for multi-disc
-# games, keeping only the single .m3u entry. Runs ON THE DECK, after Steam ROM
-# Manager (SRM's glob matches every "(Disc N)" file AND the .m3u, so a 4-disc game
-# shows as 5 entries). Safe: it parses shortcuts.vdf, does a byte-exact round-trip
-# self-test, and ONLY writes if that passes (so it can't corrupt the file). A backup
-# is saved to shortcuts.vdf.bak. Close Steam first (it rewrites the file on exit).
+# fix-multidisc.py — collapse duplicate Steam shortcuts to one entry per game.
+# Runs ON THE DECK, after Steam ROM Manager. SRM creates a shortcut for EVERY file it
+# matches, so you get duplicates from: multi-disc games (Disc 1/2/3/4 + the .m3u, all
+# cleaned to the same name), the same ROM appearing in both Redump and No-Intro, and
+# region/revision variants. This keeps exactly ONE shortcut per display name, preferring
+# the .m3u (so multi-disc plays all discs), then a non-disc file, then USA/base.
+#
+# Safe: byte-exact shortcuts.vdf round-trip self-test before writing (aborts rather than
+# risk corruption); backup saved to shortcuts.vdf.bak. Close Steam first (it rewrites
+# the file on exit). Idempotent.
 import os, glob, struct, re, shutil, sys
+from collections import OrderedDict
 
 cfg = glob.glob(os.path.expanduser("~/.steam/steam/userdata/*/config"))
 if not cfg:
@@ -14,7 +19,7 @@ vdf = cfg[0] + "/shortcuts.vdf"
 orig = open(vdf, "rb").read()
 
 def parse(b, i):
-    d = {}
+    d = OrderedDict()
     while i < len(b):
         t = b[i]
         if t == 0x08:
@@ -41,20 +46,42 @@ def ser(d):
     return bytes(out)
 
 root, _ = parse(orig, 0)
-trailer = orig[len(ser(root)):]           # the root map's end marker(s)
+trailer = orig[len(ser(root)):]
 if ser(root) + trailer != orig:
     sys.exit("ROUND-TRIP FAILED — not touching the file (parser not byte-exact).")
 print("round-trip OK (%d bytes)" % len(orig))
 
 shortcuts = root["shortcuts"][1]
-disc = re.compile(r"\((dis[ck]|cd)\s*\d+\)", re.I)
-kept, removed, n = {}, 0, 0
-for _, (typ, scut) in shortcuts.items():
-    name = scut.get("AppName", scut.get("appname", ("str", "")))[1]
-    if disc.search(name):
-        removed += 1; continue            # drop the per-disc entry; the .m3u stays
-    kept[str(n)] = ("map", scut); n += 1
-print("shortcuts: %d -> %d  (removed %d disc-member entries)" % (len(shortcuts), len(kept), removed))
+def field(sc, *names):
+    low = {k.lower(): v for k, v in sc.items()}
+    for n in names:
+        if n.lower() in low:
+            return low[n.lower()][1]
+    return ""
+def romfile(sc):
+    lo = field(sc, "LaunchOptions", "Exe")
+    m = re.search(r'([^"/\\]+\.(chd|m3u|cue|iso|zip|gdi))', lo, re.I)
+    return m.group(1) if m else ""
+def score(sc):
+    f = romfile(sc).lower()
+    s = 0
+    if f.endswith(".m3u"): s += 1000
+    if not re.search(r"\((dis[ck]|cd)\s*\d+\)", f): s += 100      # non-disc preferred
+    if "(usa)" in f: s += 10
+    if re.search(r"\((dis[ck]|cd)\s*0*1\)", f): s += 5            # else disc 1
+    return (s, -len(f))
+
+# group by display name, keep the best-scoring shortcut per name
+groups = OrderedDict()
+for key, (typ, sc) in shortcuts.items():
+    groups.setdefault(field(sc, "AppName"), []).append(sc)
+kept, removed, n = OrderedDict(), 0, 0
+for name, scs in groups.items():
+    best = max(scs, key=score) if len(scs) > 1 else scs[0]
+    removed += len(scs) - 1
+    kept[str(n)] = ("map", best); n += 1
+print("shortcuts: %d -> %d  (removed %d duplicates: multi-disc + same-rom + region/rev)"
+      % (len(shortcuts), len(kept), removed))
 
 if removed:
     root["shortcuts"] = ("map", kept)
