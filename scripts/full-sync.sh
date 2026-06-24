@@ -51,7 +51,8 @@ echo "==> [2/3] deck@$DECK_IP: RetroArch playlists + cover art"
 DST="emudeck-toolkit"
 rsync -a \
   "$HERE/retroarch-systems.sh" "$HERE/make-retroarch-playlists.sh" \
-  "$HERE/get-retroarch-thumbnails.sh" "$HERE/srm-add.sh" "$HERE/set-steam-art.py" \
+  "$HERE/get-retroarch-thumbnails.sh" "$HERE/srm-add.sh" \
+  "$HERE/set-steam-art.py" "$HERE/fix-multidisc.py" \
   "deck@$DECK_IP:$DST/"
 REMOTE="set -e; chmod +x $DST/*.sh; $DST/make-retroarch-playlists.sh; $DST/get-retroarch-thumbnails.sh"
 [ "$SRM_CLI" -eq 1 ] && REMOTE="$REMOTE; echo; echo '(--srm-cli) SRM CLI add — landscape art only, no collections:'; $DST/srm-add.sh || true"
@@ -59,21 +60,20 @@ ssh "deck@$DECK_IP" "$REMOTE"
 
 # 3) Steam library: GUI step
 echo
-echo "==> [3/3] Steam library — finish in Steam ROM Manager (GUI, on the deck):"
+echo "==> [3/3] Steam library — one GUI step, then two SSH commands:"
 echo
-echo "    SRM's GUI is the only way to save ALL artwork types (the CLI writes only"
-echo "    the landscape 'Banner'; SteamGridDB has Portrait/Hero/Logo but only the"
-echo "    GUI 'All Artwork' option saves them) and the per-console collections."
-echo "    In Desktop Mode, open EmuDeck -> Steam ROM Manager, then:"
+echo "  A) On the deck (Desktop Mode): EmuDeck -> Steam ROM Manager ->"
+echo "     'Add Games' (bottom bar) -> Generate app list -> 'Save to Steam'."
+echo "     (creates the game shortcuts + per-console Collections — the CLI can't)"
 echo
-echo "      1. 'Add Games' (bottom bar)  ->  Generate app list  ->  'Save to Steam'"
-echo "         (creates the games + per-console Collections + landscape art; set the"
-echo "          'Artwork Type' dropdown to 'All Artwork' first if you also want Hero/Logo)"
-echo "      2. Add the box-art LIBRARY TILES (the reliable way — SRM often won't):"
-echo "             ssh deck@$DECK_IP 'python3 $DST/set-steam-art.py'"
-echo "         (re-uses the cover art already on the deck; names them <id>p.png)"
-echo "      3. Restart Steam / Return to Gaming Mode  ->  tiles + folders show."
+echo "  B) Then from here finish the artwork + de-dupe multi-disc (Steam closed):"
+echo "       ssh deck@$DECK_IP \"python3 $DST/fix-multidisc.py\""
+echo "       ssh deck@$DECK_IP \"SGDB_KEY='${SGDB_KEY:-}' python3 $DST/set-steam-art.py\""
+echo "     fix-multidisc = keep only the .m3u entry per multi-disc game;"
+echo "     set-steam-art = portrait tiles (box art) + Hero/Logo (SteamGridDB, batched)."
 echo
-echo "Done. Import + transfer + playlists + art are automated; the SRM GUI save above"
-echo "lights up the games, full artwork, and collections in Gaming Mode."
+echo "  C) Restart Steam -> covers, hero art, folders, single multi-disc entries."
+echo
+echo "Import + transfer + playlists + cover art are fully automated above; the SRM"
+echo "save + those two commands are the once-per-batch on-deck finish."
 echo "(ES-DE users: nothing else needed — ES-DE auto-discovers new games.)"

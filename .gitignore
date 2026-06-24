@@ -82,6 +82,10 @@ SETUP-GUIDE.md
 package-lock.json
 node_modules/
 
+# --- python bytecode cruft ---
+__pycache__/
+*.pyc
+
 # --- OS junk ---
 .DS_Store
 Thumbs.db

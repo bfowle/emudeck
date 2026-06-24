@@ -50,13 +50,24 @@ In Desktop Mode:
 5. Desktop → **Return to Gaming Mode** → **STEAM → Library** → your games are there,
    with full art, grouped by system → **Play**.
 
-**Library tiles still blank?** SRM often writes only the landscape art even with
-"All Artwork", so the vertical grid stays empty. Fix it deterministically with
-**`set-steam-art.py`** (on the deck, after the SRM save): it copies your RetroArch
-box art into `grid/<id>p.png` for each shortcut, so the Game Mode library grid shows
-covers. Then **restart Steam** (it caches the library hard — a soft restart often
-isn't enough). The per-console **folders** appear under **Collections** in Game Mode,
-written by the GUI save (the `srm-add.sh` CLI writes only legacy tags Game Mode ignores).
+**Library tiles / hero art blank?** SRM frequently writes only the landscape capsule
+even with "All Artwork", so the vertical tiles and detail-page hero stay empty. Fix it
+deterministically with **`set-steam-art.py`** (on the deck, after the SRM save):
+- **portrait tiles** from your RetroArch box art (keyless), and
+- **Hero / Logo** + any missing covers from **SteamGridDB** (`SGDB_KEY=… python3
+  set-steam-art.py`; lookups are batched 50 ids/request).
+
+It names files by the **32-bit shortcut AppID** (`<appid>p.png`, `<appid>_hero.*`) —
+the format Steam actually reads; the 64-bit ids SRM writes are why naively-named art
+won't show. Then **restart Steam** (it caches the library hard).
+
+**Multi-disc games showing as Disc 1/2/3/4 + a combined entry?** SRM's glob matches
+every `.chd` *and* the `.m3u`. **`fix-multidisc.py`** removes the per-disc shortcuts,
+keeping only the `.m3u` — with a byte-exact `shortcuts.vdf` round-trip self-test so it
+can't corrupt the file (backup saved). Close Steam first.
+
+The per-console **folders** appear under **Collections** in Game Mode (written by the
+SRM GUI save; the `srm-add.sh` CLI only writes legacy tags Game Mode ignores).
 
 > Why this can't be fully scripted: SRM's CLI `add` only ever writes the landscape
 > type and the legacy category tags Game Mode ignores. SteamGridDB *has* the Portrait/
