@@ -120,7 +120,7 @@ Most BIOS go flat in `Emulation/bios/`; **Dreamcast** (`dc_boot.bin`, `dc_flash.
 ./transfer-to-deck.sh <deck-ip> /run/media/<CARD>/Emulation
 ```
 
-`rsync` over SSH — resumable, only copies changes. Use the **Dock's Ethernet** for speed.
+`rsync` over SSH — resumable, only copies changes. Use the **Dock's Ethernet** for speed. Before a big first push, bump the deck's sleep timer (**Settings → Power → Sleep** → 30+ min, or keep it plugged + awake) so it doesn't suspend mid-transfer; the same applies to long ES-DE scrapes. (Resumable anyway — just re-run to continue.)
 
 > **Steps 7–10 are an on-deck overview.** For the full runbook — BIOS sourcing,
 > Steam ROM Manager, RetroAchievements (incl. editing `retroarch.cfg` over SSH),
@@ -152,8 +152,10 @@ The Logitech MX devices hold **3 Bluetooth channels** (Easy-Switch) — keep one
 
 ### 10. Maintain
 
-- Update emulators from the EmuDeck app or the **EmuDecky** Decky plugin; RetroArch cores via its Online Updater.
-- Keep your PC staging tree as the master backup; re-run `transfer-to-deck.sh` to push additions (only changes copy). Back up `Emulation/saves`.
+- **Update** emulators from the EmuDeck app or the **EmuDecky** Decky plugin; RetroArch cores via its Online Updater.
+- **Saves:** keep your PC staging tree as the master backup and re-run `transfer-to-deck.sh` to push additions (only changes copy). Back up `Emulation/saves` — or use EmuDeck's built-in **Cloud Backup** (EmuDeck app → *Tools & Stuff → Cloud Backup*) to sync saves to your own cloud.
+- **Tweak look/feel later:** bezels, per-system aspect ratios, and LCD/CRT shaders are all re-runnable from the EmuDeck app → **Quick Settings** (no reinstall); per-*game* overrides go through the RetroArch quick menu (`L3+R3`, see [`ON-DECK.md` §6](ON-DECK.md#6-hotkeys--exiting-and-navigating)).
+- **When you expand to PS2/GameCube/Switch:** that's when **performance tuning** starts to matter — **[CryoUtilities](https://github.com/CryoByte33/steam-deck-utilities)** (swap size + memory tweaks) and the **PowerTools** Decky plugin (TDP/CPU/GPU caps, also handy to *limit* power for battery). The 6th-gen disc trio here doesn't need either — the Deck is heavily overpowered for it.
 
 ---
 

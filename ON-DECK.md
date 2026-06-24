@@ -267,6 +267,12 @@ The deck labels buttons differently than emulators expect:
   | Fast-forward | Select + R2 |
   | Pause | Select + A |
 
+- **Open the RetroArch quick menu directly:** **L3 + R3** (click both thumbsticks in) —
+  works even if the Select enabler is acting up, and it's where you set **per-game
+  overrides**: *Quick Menu → Settings → Video* (aspect ratio / scaling / shader), then
+  *Quick Menu → Overrides → **Save Game Overrides*** (one game) or **Save Content Dir
+  Overrides** (whole system). The fix for a stretched MAME/arcade game lives here.
+
 **"Just pressing A pauses / shows FPS" (face buttons trigger hotkeys bare):** the
 hotkey **enabler** modifier got lost, so hotkeys fire without holding Select. Quick
 fix: toggle **Game Focus mode** on while in-game (disables all hotkeys). Proper fix:
