@@ -285,11 +285,13 @@ If you browse from RetroArch's own UI rather than ES-DE/Steam:
   behavior is *Settings → User Interface → On-Demand Thumbnail Downloads* (leave ON
   to backfill, or OFF to rely only on bulk passes).
 
-**Skip the clicking entirely** — the toolkit can do both over SSH:
+**Skip the clicking entirely** — the toolkit does the RetroArch side over SSH:
 `make-retroarch-playlists.sh` generates the `.lpl` files (one per system, multi-disc
-`.m3u` shown once) and `get-retroarch-thumbnails.sh` pulls the matching cover art. And
-`full-sync.sh` on the PC chains the *whole* add-games loop — import → transfer →
-playlists → art → Steam (via the SRM CLI) — into one command (needs passwordless SSH).
+`.m3u` shown once) and `get-retroarch-thumbnails.sh` pulls the matching cover art.
+`full-sync.sh` on the PC chains import → transfer → playlists → art automatically,
+then **prints the Steam ROM Manager GUI steps** — because SRM's CLI only fetches
+landscape art and can't write the per-console collections, so the final Steam
+library (tiles + hero art + folders) is a one-time GUI "Save to Steam".
 
 ---
 

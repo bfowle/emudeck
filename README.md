@@ -197,7 +197,7 @@ All in `scripts/`, all run on the **PC** except where noted.
 | `import-zips.sh` | **Parallel, idempotent** importer for Redump/No-Intro `"System Name/*.zip"` sets: extract → `.chd` (carts copied as-is). Finds system folders at **any depth** — flat *or* nested `Redump/` + `No-Intro/` (e.g. a Myrient mirror) in one run. `-j N` jobs (auto ≈ cores/5); skips/retries still-downloading zips. |
 | `zip-status.sh` | **Read-only** report: which zips are imported (`.chd` exists) vs pending, and why (still-downloading / ready / needs-attention). Recurses like `import-zips`. Touches nothing. |
 | `sync.sh` | **Idempotent sync**: `import-zips` + `transfer-to-deck`. Re-run anytime to add new games (config in `.env`, see [`.env.example`](.env.example)). |
-| `full-sync.sh` | **The whole loop in one command**: `sync.sh`, then over SSH on the deck — regenerate RetroArch playlists + cover art and update the Steam library via the SRM CLI. Needs passwordless SSH (`ssh-copy-id`). Flags: `--no-srm` / `--no-deck` / `--no-import`. |
+| `full-sync.sh` | **One command**: `sync.sh`, then over SSH — regenerate RetroArch playlists + cover art, and print the **Steam ROM Manager GUI steps**. (The SRM *CLI* only fetches landscape art and can't write collections, so the final Steam tiles/hero art/folders are a GUI "Save to Steam".) Needs passwordless SSH + deck in **Desktop Mode**. Flags: `--srm-cli` / `--no-deck` / `--no-import`. |
 | `systems.sh` | Shared source-folder-name → EmuDeck-system mapping (sourced by both importers). |
 | `compress-chd.sh` | Batch `.cue/.iso/.gdi` → `.chd` (`--dvd` for PS2, `--out DIR` to redirect, `--delete` to drop sources/links). |
 | `make-m3u.sh` | Generates multi-disc `.m3u` playlists. |
@@ -205,7 +205,7 @@ All in `scripts/`, all run on the **PC** except where noted.
 | `transfer-to-deck.sh` | `rsync`-over-SSH push to the deck's SD card. Reads `.env` (runs arg-less). |
 | `make-retroarch-playlists.sh` | *(runs on the deck)* Generates RetroArch `.lpl` playlists from the roms tree — one per system, named to match libretro so thumbnails resolve; multi-disc `.m3u` shown once. |
 | `get-retroarch-thumbnails.sh` | *(runs on the deck)* Bulk-downloads matching cover art from libretro's thumbnail server into RetroArch's `thumbnails/`. Idempotent + **miss-cached**: skips art already on disk *and* games with no art in the DB, so warm re-runs do ~zero network (`--recheck` to retry misses). |
-| `srm-add.sh` | *(runs on the deck)* Updates the Steam library via the Steam ROM Manager **CLI** (`add`), grouping games into **per-console collections** (sets each parser's `steamCategory`). Borrows the running **Desktop-Mode** session's full env (display + D-Bus) so `add` works over SSH; closes Steam first; GUI fallback otherwise. |
+| `srm-add.sh` | *(runs on the deck; opt-in via `full-sync --srm-cli`)* SRM **CLI** `add` — sets per-console `steamCategory` and borrows the Desktop session's full env (display + D-Bus) so `add` works over SSH. **Incomplete:** fetches only landscape art and the legacy category tags that Game Mode ignores for folders — full tiles/hero art + real collections need the **GUI** "Save to Steam". |
 | `setup-cheevos.py` | *(runs on the deck)* Logs **RetroAchievements** (softcore) into RetroArch, DuckStation & Flycast via the RA API token — reads creds from `$RA_USER/$RA_PASS` or `retroarch.cfg`. No on-screen keyboard. |
 | `retroarch-systems.sh` | Shared system-id → RetroArch database-name map (sourced by the two RetroArch scripts above). |
 
