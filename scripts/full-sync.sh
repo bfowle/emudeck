@@ -61,12 +61,16 @@ ssh "deck@$DECK_IP" "$REMOTE"
 echo
 echo "==> [3/3] Steam library — finish in Steam ROM Manager (GUI, on the deck):"
 echo
-echo "    SRM's GUI is the only reliable way to add games with FULL artwork"
-echo "    (library tiles + hero) and per-console collections. In Desktop Mode:"
+echo "    SRM's GUI is the only way to save ALL artwork types (the CLI writes only"
+echo "    the landscape 'Banner'; SteamGridDB has Portrait/Hero/Logo but only the"
+echo "    GUI 'All Artwork' option saves them) and the per-console collections."
+echo "    In Desktop Mode, open EmuDeck -> Steam ROM Manager, then:"
 echo
-echo "      1. EmuDeck app  ->  Steam ROM Manager        (it closes Steam)"
-echo "      2. top tab: Preview  ->  Generate app list   (uses cached art; a few min)"
-echo "      3. Save to Steam"
+echo "      1. 'Add Games' (bottom bar)  ->  Generate app list    (parses everything)"
+echo "      2. set the 'Artwork Type' dropdown to 'All Artwork'   <-- THE KEY STEP:"
+echo "         this is what saves Portrait (library tiles) + Hero + Logo, not just"
+echo "         the Banner you get otherwise."
+echo "      3. 'Save to Steam'"
 echo "      4. Return to Gaming Mode (restart Steam if art/folders lag)"
 echo
 echo "Done. Import + transfer + playlists + art are automated; the SRM GUI save above"

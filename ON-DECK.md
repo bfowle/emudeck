@@ -40,17 +40,25 @@ Full screenshot walkthroughs: **Wagner's TechTalk** —
 In Desktop Mode:
 
 1. Open **EmuDeck** → click **Steam ROM Manager** (it must **close Steam** → Yes).
-2. Sidebar → **Parsers** → confirm your systems are enabled (on by default).
-3. **Preview → Generate app list** (a.k.a. **Add Games**). This scans your ROMs **and
-   downloads box art** from SteamGridDB — with hundreds of games it takes a few
-   minutes; let it finish. (Cycle art per game with the **◀ ▶** arrows if you want.)
-4. **Save to Steam** (Save App List).
-5. Desktop → double-click **Return to Gaming Mode** → **STEAM → Library** → your
-   games are there, with art, grouped by system → **Play**.
+2. **Add Games** (bottom bar) → **Generate app list**. This scans your ROMs **and
+   fetches art** from SteamGridDB — with hundreds of games it takes a few minutes.
+3. **Set the "Artwork Type" dropdown to "All Artwork."** ← *easy to miss, and the
+   whole game:* without it SRM saves only the landscape **Banner**, so your library
+   tiles (Portrait), detail-page **Hero**, and **Logo** stay blank even though
+   SteamGridDB has them. "All Artwork" saves every type.
+4. **Save to Steam**.
+5. Desktop → **Return to Gaming Mode** → **STEAM → Library** → your games are there,
+   with full art, grouped by system → **Play**.
 
-**Missing/blank art?** Re-run *Generate app list* (it's usually SteamGridDB
-rate-limiting on a big batch); **restart Steam** so it reloads the library cache;
-or add a free SteamGridDB **API key** in SRM → Settings.
+**Still missing art after that?** **Restart Steam / reboot** (it caches the library
+hard — a soft restart often isn't enough). The *grouping* (per-console folders) is
+written by this GUI save too — the headless `srm-add.sh` CLI can't create them.
+
+> Why this can't be fully scripted: SRM's CLI `add` only ever writes the landscape
+> type and the legacy category tags Game Mode ignores. SteamGridDB *has* the Portrait/
+> Hero/Logo (confirmed in SRM's `artworkCache.json`), but only the GUI's **All Artwork**
+> save writes them — there's no CLI flag for it. So `full-sync.sh` automates everything
+> up to here and hands you this one GUI step.
 
 ---
 
