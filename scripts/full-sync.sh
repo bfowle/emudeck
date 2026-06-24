@@ -51,7 +51,7 @@ echo "==> [2/3] deck@$DECK_IP: RetroArch playlists + cover art"
 DST="emudeck-toolkit"
 rsync -a \
   "$HERE/retroarch-systems.sh" "$HERE/make-retroarch-playlists.sh" \
-  "$HERE/get-retroarch-thumbnails.sh" "$HERE/srm-add.sh" \
+  "$HERE/get-retroarch-thumbnails.sh" "$HERE/srm-add.sh" "$HERE/set-steam-art.py" \
   "deck@$DECK_IP:$DST/"
 REMOTE="set -e; chmod +x $DST/*.sh; $DST/make-retroarch-playlists.sh; $DST/get-retroarch-thumbnails.sh"
 [ "$SRM_CLI" -eq 1 ] && REMOTE="$REMOTE; echo; echo '(--srm-cli) SRM CLI add — landscape art only, no collections:'; $DST/srm-add.sh || true"
@@ -66,12 +66,13 @@ echo "    the landscape 'Banner'; SteamGridDB has Portrait/Hero/Logo but only th
 echo "    GUI 'All Artwork' option saves them) and the per-console collections."
 echo "    In Desktop Mode, open EmuDeck -> Steam ROM Manager, then:"
 echo
-echo "      1. 'Add Games' (bottom bar)  ->  Generate app list    (parses everything)"
-echo "      2. set the 'Artwork Type' dropdown to 'All Artwork'   <-- THE KEY STEP:"
-echo "         this is what saves Portrait (library tiles) + Hero + Logo, not just"
-echo "         the Banner you get otherwise."
-echo "      3. 'Save to Steam'"
-echo "      4. Return to Gaming Mode (restart Steam if art/folders lag)"
+echo "      1. 'Add Games' (bottom bar)  ->  Generate app list  ->  'Save to Steam'"
+echo "         (creates the games + per-console Collections + landscape art; set the"
+echo "          'Artwork Type' dropdown to 'All Artwork' first if you also want Hero/Logo)"
+echo "      2. Add the box-art LIBRARY TILES (the reliable way — SRM often won't):"
+echo "             ssh deck@$DECK_IP 'python3 $DST/set-steam-art.py'"
+echo "         (re-uses the cover art already on the deck; names them <id>p.png)"
+echo "      3. Restart Steam / Return to Gaming Mode  ->  tiles + folders show."
 echo
 echo "Done. Import + transfer + playlists + art are automated; the SRM GUI save above"
 echo "lights up the games, full artwork, and collections in Gaming Mode."

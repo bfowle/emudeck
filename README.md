@@ -207,6 +207,7 @@ All in `scripts/`, all run on the **PC** except where noted.
 | `get-retroarch-thumbnails.sh` | *(runs on the deck)* Bulk-downloads matching cover art from libretro's thumbnail server into RetroArch's `thumbnails/`. Idempotent + **miss-cached**: skips art already on disk *and* games with no art in the DB, so warm re-runs do ~zero network (`--recheck` to retry misses). |
 | `srm-add.sh` | *(runs on the deck; opt-in via `full-sync --srm-cli`)* SRM **CLI** `add` — sets per-console `steamCategory` and borrows the Desktop session's full env (display + D-Bus) so `add` works over SSH. **Incomplete:** fetches only landscape art and the legacy category tags that Game Mode ignores for folders — full tiles/hero art + real collections need the **GUI** "Save to Steam". |
 | `setup-cheevos.py` | *(runs on the deck)* Logs **RetroAchievements** (softcore) into RetroArch, DuckStation & Flycast via the RA API token — reads creds from `$RA_USER/$RA_PASS` or `retroarch.cfg`. No on-screen keyboard. |
+| `set-steam-art.py` | *(runs on the deck, after SRM)* Fills in the **portrait library tiles** Steam ROM Manager won't — copies the RetroArch box art into `grid/<id>p.png` for each shortcut (matched by name). The reliable way to get covers on the Game Mode grid. |
 | `retroarch-systems.sh` | Shared system-id → RetroArch database-name map (sourced by the two RetroArch scripts above). |
 
 ---

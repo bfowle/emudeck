@@ -50,9 +50,13 @@ In Desktop Mode:
 5. Desktop → **Return to Gaming Mode** → **STEAM → Library** → your games are there,
    with full art, grouped by system → **Play**.
 
-**Still missing art after that?** **Restart Steam / reboot** (it caches the library
-hard — a soft restart often isn't enough). The *grouping* (per-console folders) is
-written by this GUI save too — the headless `srm-add.sh` CLI can't create them.
+**Library tiles still blank?** SRM often writes only the landscape art even with
+"All Artwork", so the vertical grid stays empty. Fix it deterministically with
+**`set-steam-art.py`** (on the deck, after the SRM save): it copies your RetroArch
+box art into `grid/<id>p.png` for each shortcut, so the Game Mode library grid shows
+covers. Then **restart Steam** (it caches the library hard — a soft restart often
+isn't enough). The per-console **folders** appear under **Collections** in Game Mode,
+written by the GUI save (the `srm-add.sh` CLI writes only legacy tags Game Mode ignores).
 
 > Why this can't be fully scripted: SRM's CLI `add` only ever writes the landscape
 > type and the legacy category tags Game Mode ignores. SteamGridDB *has* the Portrait/
