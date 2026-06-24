@@ -136,13 +136,19 @@ Most BIOS go flat in `Emulation/bios/`; **Dreamcast** (`dc_boot.bin`, `dc_flash.
 
 Create an account at [retroachievements.org](https://retroachievements.org). EmuDeck's installer login (or the EmuDeck app's RetroAchievements step) usually propagates to RetroArch + standalone emulators (DuckStation/PCSX2/PPSSPP/Dolphin); if one drops, re-enter the credentials in that emulator's *Settings → Achievements* (Hardcore OFF for softcore). Skip the painful on-screen keyboard by setting `cheevos_enable`/`cheevos_username`/`cheevos_password` (and clearing `cheevos_token`) directly in `retroarch.cfg` over SSH — **with RetroArch closed**, since it rewrites that file on exit and killing it via *STEAM → Exit Game* discards changes. A boot-time *"Logged in as …"* popup confirms it; the **Emuchievements** Decky plugin shows progress in Gaming Mode. Full steps in [`ON-DECK.md` §5](ON-DECK.md#5-retroachievements-softcore).
 
-### 9. Controllers + dock
+### 9. Controllers, keyboard & mouse (wireless) + dock
 
-- **Xbox One pad over Bluetooth** (One S/Series have it; the 2013 launch pad doesn't) — cleanest.
-- **Wired USB** into the dock — always works.
-- **Xbox Wireless Adapter dongle** — on SteamOS it needs the community `xone` driver, isn't officially supported, and breaks on updates; prefer Bluetooth/wired.
+**Most efficient + community-tested: pair all three over Bluetooth** (Settings → **Bluetooth**, in Desktop *or* Gaming Mode). That uses **zero dock USB ports** and avoids the well-documented **USB-3 / 2.4 GHz interference** problem — a dock's USB-3 ports inject noise that disrupts 2.4 GHz dongles *and* Bluetooth ([Lemmy PSA](https://lemmy.world/post/25551190), [Nerdburglars](https://nerdburglars.net/question/how-to-fix-2-4ghz-peripheral-issues-with-steam-deck-dock/)). Put the device in pairing mode, then select it on the Deck:
 
-EmuDeck hotkeys use **Select + button** (e.g. Select+Start = quit, Select+R1/L1 = save/load state); the always-works exit is **STEAM → Exit Game**. Full combo table — and the fix for "a face button pauses the game" (a lost hotkey-enabler; toggle Game Focus mode) — is in [`ON-DECK.md` §6](ON-DECK.md#6-hotkeys--exiting-and-navigating); reference [emudeck.github.io/controls-and-hotkeys/steamos/hotkeys](https://emudeck.github.io/controls-and-hotkeys/steamos/hotkeys/). Remap for external pads (which lack the Deck's back paddles) via **Steam Input**. The dock provides HDMI/DP, Ethernet, USB, and charge passthrough.
+| Device | Pair via | How / gotchas |
+|---|---|---|
+| **MX Keys Mini** (keyboard) | **Bluetooth** | No USB receiver in the box anyway. Hold an **Easy-Switch** key (`F1`–`F3`, the dotted ones) ~3 s until it blinks fast → pair. |
+| **MX Anywhere 3S** (mouse) | **Bluetooth** (or its Logi Bolt receiver) | Bottom switch on, hold the pair button till it blinks → pair. If you'd rather run the included **Bolt receiver** from the dock, put it on a **short USB extension cable** (or a USB-2.0 port/hub) — a 2.4 GHz dongle plugged straight into a USB-3 dock port is exactly what causes the dropouts. |
+| **Xbox Wireless Controller** (Series / One S) | **Bluetooth** | **Update its firmware first** (Xbox Accessories app on a PC/Xbox) — old firmware's Bluetooth-LE is flaky on SteamOS. Hold the **Pair** button (top edge, by USB-C) until the logo flashes fast → pair; Steam Input then handles it natively. If it won't connect: wake the Deck *after* the controller is in pair mode, or pair in **Desktop Mode** then return to Game Mode ([Steam bug thread](https://steamcommunity.com/app/1675200/discussions/1/4208120159994132586/), [NerdZap](https://nerdzap.com/guides/fix-xbox-controller-pairing/)). **Don't** use the Xbox 2.4 GHz USB dongle — SteamOS needs the unofficial `xone` driver (immutable FS, breaks on updates). |
+
+The Logitech MX devices hold **3 Bluetooth channels** (Easy-Switch) — keep one paired to the Deck, others to your PC, tap to switch. (Want everything on USB receivers instead? You'd add a separate Logi Bolt receiver for the keyboard and pair it via **Logi Options+ on a PC** — one receiver can drive both KB + mouse — but the controller still has to be Bluetooth, so all-Bluetooth stays simplest.)
+
+**Hotkeys:** EmuDeck uses **Select + button** (Select+Start = quit, Select+R1/L1 = save/load state); the always-works exit is **STEAM → Exit Game**. Full combo table — and the fix for "a face button pauses the game" (a lost hotkey-enabler; toggle Game Focus mode) — is in [`ON-DECK.md` §6](ON-DECK.md#6-hotkeys--exiting-and-navigating); reference [emudeck.github.io/controls-and-hotkeys/steamos/hotkeys](https://emudeck.github.io/controls-and-hotkeys/steamos/hotkeys/). Remap external pads (which lack the Deck's back paddles) via **Steam Input**. The **dock** provides HDMI/DP, Ethernet, USB, and charge passthrough.
 
 ### 10. Maintain
 
