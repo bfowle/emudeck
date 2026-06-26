@@ -50,21 +50,28 @@ In Desktop Mode:
 5. Desktop → **Return to Gaming Mode** → **STEAM → Library** → your games are there,
    with full art, grouped by system → **Play**.
 
+**Finish the Steam side from the PC — one command.** After the SRM save, run
+**`./scripts/finish-steam.sh`** (passwordless SSH + deck in Desktop Mode). It closes
+Steam for you, runs the two fix-ups below in order, and is idempotent — safe to re-run
+after adding more games. The two pieces, and why each is needed:
+
 **Library tiles / hero art blank?** SRM frequently writes only the landscape capsule
-even with "All Artwork", so the vertical tiles and detail-page hero stay empty. Fix it
-deterministically with **`set-steam-art.py`** (on the deck, after the SRM save):
+even with "All Artwork", so the vertical tiles and detail-page hero stay empty.
+**`set-steam-art.py`** fixes it deterministically:
 - **portrait tiles** from your RetroArch box art (keyless), and
-- **Hero / Logo** + any missing covers from **SteamGridDB** (`SGDB_KEY=… python3
-  set-steam-art.py`; lookups are batched 50 ids/request).
+- **Hero / Logo** + any missing covers from **SteamGridDB** (`$SGDB_KEY`; lookups
+  batched 50 ids/request).
 
 It names files by the **32-bit shortcut AppID** (`<appid>p.png`, `<appid>_hero.*`) —
 the format Steam actually reads; the 64-bit ids SRM writes are why naively-named art
-won't show. Then **restart Steam** (it caches the library hard).
+won't show.
 
 **Multi-disc games showing as Disc 1/2/3/4 + a combined entry?** SRM's glob matches
 every `.chd` *and* the `.m3u`. **`fix-multidisc.py`** removes the per-disc shortcuts,
 keeping only the `.m3u` — with a byte-exact `shortcuts.vdf` round-trip self-test so it
-can't corrupt the file (backup saved). Close Steam first.
+can't corrupt the file (backup saved).
+
+Then **restart Steam** (it caches the library hard).
 
 The per-console **folders** appear under **Collections** in Game Mode (written by the
 SRM GUI save; the `srm-add.sh` CLI only writes legacy tags Game Mode ignores).

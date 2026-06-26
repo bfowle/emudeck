@@ -10,8 +10,10 @@ map_system() {
   local n; n="$(printf '%s' "$1" | tr 'A-Z' 'a-z' | tr -cd 'a-z0-9')"
   case "$n" in
     *wiiu*)                                    echo wiiu ;;
-    *nintendoentertainmentsystem*|nes|famicom) echo nes ;;
+    # SNES MUST come before NES: "Super Nintendo Entertainment System" contains
+    # the substring "Nintendo Entertainment System", so the NES glob would steal it.
     *supernintendo*|*superfamicom*|snes|sfc)   echo snes ;;
+    *nintendoentertainmentsystem*|nes|famicom) echo nes ;;
     *nintendo64*|n64)                          echo n64 ;;
     *gameboyadvance*|gba)                      echo gba ;;
     *gameboycolor*|gbc)                        echo gbc ;;

@@ -205,7 +205,7 @@ All in `scripts/`, all run on the **PC** except where noted.
 | `import-zips.sh` | **Parallel, idempotent** importer for Redump/No-Intro `"System Name/*.zip"` sets: extract → `.chd` (carts copied as-is). Finds system folders at **any depth** — flat *or* nested `Redump/` + `No-Intro/` (e.g. a Myrient mirror) in one run. `-j N` jobs (auto ≈ cores/5); skips/retries still-downloading zips. |
 | `zip-status.sh` | **Read-only** report: which zips are imported (`.chd` exists) vs pending, and why (still-downloading / ready / needs-attention). Recurses like `import-zips`. Touches nothing. |
 | `sync.sh` | **Idempotent sync**: `import-zips` + `transfer-to-deck`. Re-run anytime to add new games (config in `.env`, see [`.env.example`](.env.example)). |
-| `full-sync.sh` | **One command**: `sync.sh`, then over SSH — regenerate RetroArch playlists + cover art, and print the **Steam ROM Manager GUI steps**. (The SRM *CLI* only fetches landscape art and can't write collections, so the final Steam tiles/hero art/folders are a GUI "Save to Steam".) Needs passwordless SSH + deck in **Desktop Mode**. Flags: `--srm-cli` / `--no-deck` / `--no-import`. |
+| `full-sync.sh` | **One command**: `sync.sh`, then over SSH — regenerate RetroArch playlists + cover art, then print the one **Steam ROM Manager GUI step** + the `finish-steam.sh` finish. (The SRM *CLI* only fetches landscape art and can't write collections, so the final Steam tiles/hero art/folders are a GUI "Save to Steam".) Needs passwordless SSH + deck in **Desktop Mode**. Flags: `--srm-cli` / `--no-deck` / `--no-import`. |
 | `systems.sh` | Shared source-folder-name → EmuDeck-system mapping (sourced by both importers). |
 | `compress-chd.sh` | Batch `.cue/.iso/.gdi` → `.chd` (`--dvd` for PS2, `--out DIR` to redirect, `--delete` to drop sources/links). |
 | `make-m3u.sh` | Generates multi-disc `.m3u` playlists. |
@@ -217,6 +217,7 @@ All in `scripts/`, all run on the **PC** except where noted.
 | `setup-cheevos.py` | *(runs on the deck)* Logs **RetroAchievements** (softcore) into RetroArch, DuckStation & Flycast via the RA API token — reads creds from `$RA_USER/$RA_PASS` or `retroarch.cfg`. No on-screen keyboard. |
 | `set-steam-art.py` | *(runs on the deck, after SRM)* Fills in the Steam artwork SRM leaves blank: **portrait tiles** from RetroArch box art (keyless) + **Hero/Logo** and any missing covers from **SteamGridDB** (`$SGDB_KEY`, batched lookups, resumable). Names files by the 32-bit shortcut AppID — the format Steam reads. |
 | `fix-multidisc.py` | *(runs on the deck, after SRM)* Removes the per-disc Steam shortcuts SRM creates for multi-disc games, keeping only the `.m3u` entry. Byte-exact round-trip self-test before writing (can't corrupt `shortcuts.vdf`); saves a backup. |
+| `finish-steam.sh` | **One command for the post-SRM finish** (runs on the PC, over SSH). After the GUI "Save to Steam", does **close Steam → `fix-multidisc.py` → `set-steam-art.py`** in order — so you can't miss the Steam-must-be-closed precondition. Idempotent; re-run after adding games. Reads `.env` (`DECK_IP`, `SGDB_KEY`). |
 | `retroarch-systems.sh` | Shared system-id → RetroArch database-name map (sourced by the two RetroArch scripts above). |
 
 ---

@@ -60,20 +60,19 @@ ssh "deck@$DECK_IP" "$REMOTE"
 
 # 3) Steam library: GUI step
 echo
-echo "==> [3/3] Steam library — one GUI step, then two SSH commands:"
+echo "==> [3/3] Steam library — one GUI step, then one command:"
 echo
 echo "  A) On the deck (Desktop Mode): EmuDeck -> Steam ROM Manager ->"
 echo "     'Add Games' (bottom bar) -> Generate app list -> 'Save to Steam'."
 echo "     (creates the game shortcuts + per-console Collections — the CLI can't)"
 echo
-echo "  B) Then from here finish the artwork + de-dupe multi-disc (Steam closed):"
-echo "       ssh deck@$DECK_IP \"python3 $DST/fix-multidisc.py\""
-echo "       ssh deck@$DECK_IP \"SGDB_KEY='${SGDB_KEY:-}' python3 $DST/set-steam-art.py\""
-echo "     fix-multidisc = keep only the .m3u entry per multi-disc game;"
-echo "     set-steam-art = portrait tiles (box art) + Hero/Logo (SteamGridDB, batched)."
+echo "  B) Then from here finish the Steam side with one command:"
+echo "       $HERE/finish-steam.sh"
+echo "     (closes Steam, de-dupes multi-disc to one .m3u entry per game, fills"
+echo "      artwork — box-art tiles + Hero/Logo from SteamGridDB. Idempotent.)"
 echo
 echo "  C) Restart Steam -> covers, hero art, folders, single multi-disc entries."
 echo
 echo "Import + transfer + playlists + cover art are fully automated above; the SRM"
-echo "save + those two commands are the once-per-batch on-deck finish."
+echo "save + finish-steam.sh are the once-per-batch on-deck finish."
 echo "(ES-DE users: nothing else needed — ES-DE auto-discovers new games.)"
